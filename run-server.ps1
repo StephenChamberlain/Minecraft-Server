@@ -25,4 +25,4 @@ Wait-Process -Id $OverviewerProcessId
 
 # Sync it to the web.
 # Note: disable 'preview changes' in WinSCP GUI to push directly.
-#& "$WinSCPPath\winscp.exe" www.steve-chamberlain.co.uk /synchronize "..\$World" "/public_html/$World"
+& "$WinSCPPath\winscp.exe" www.steve-chamberlain.co.uk /synchronize "..\$World" "/public_html/$World"
