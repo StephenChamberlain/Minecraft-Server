@@ -24,5 +24,21 @@ $OverviewerProcessId = (Get-Process overviewer).id
 Wait-Process -Id $OverviewerProcessId
 
 # Sync it to the web.
-# Note: disable 'preview changes' in WinSCP GUI to push directly.
-& "$WinSCPPath\winscp.exe" www.steve-chamberlain.co.uk /synchronize "..\$World" "/public_html/$World"
+& "$WinSCPPath\WinSCP.com" `
+  /log="WinSCP.log" /ini=nul `
+  /command `
+    "open ftp://nv0ir8pq76p1%40steve-chamberlain.co.uk:WbB%3F2%2Cxp8%7DR%60X.%3F%23@ftp.steve-chamberlain.co.uk/" `
+    "synchronize remote ..\$World /public_html/$World" `
+    "exit"
+
+$winscpResult = $LastExitCode
+if ($winscpResult -eq 0)
+{
+  Write-Host "Success"
+}
+else
+{
+  Write-Host "Error"
+}
+
+exit $winscpResult
