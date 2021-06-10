@@ -63,6 +63,6 @@ function Publish-Overviewer-Map-To-Web {
 
 # EXECUTE
 # --------------------------------------------------------------------------------------------
-#Start-Minecraft-And-Wait
+Start-Minecraft-And-Wait
 Start-Overviewer-And-Wait
-#Publish-Overviewer-Map-To-Web
+Publish-Overviewer-Map-To-Web
