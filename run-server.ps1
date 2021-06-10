@@ -38,7 +38,7 @@ function Start-Overviewer-And-Wait {
 }
 
 function Publish-Overviewer-Map-To-Web {
-  # TODO: log to go to scripting folder
+  # TODO: ALL logs to go to scripting folder, including minecraft server and overviewer. All logs in one place...
   Push-Location $OverviewerPath
 
   & "$WinSCPPath\WinSCP.com" `
