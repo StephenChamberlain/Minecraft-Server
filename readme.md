@@ -7,5 +7,10 @@ Script to do the following:
 ## Instructions
 Check out to [your Minecraft installation path]\scripting, where server and overviewer are sibling folders to 'scripting':
 
-
 ![Folder structure](/folder-structure.png?raw=true)  
+
+## Dependencies
+Relies on: 
+- Java on the Windows PATH.
+- Overviewer (https://docs.overviewer.org/en/latest/).
+- WinSCP.
