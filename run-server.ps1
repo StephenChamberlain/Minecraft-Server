@@ -3,13 +3,21 @@
 $MinecraftServerPath = "D:\Games\Minecraft\server"
 $OverviewerPath = "D:\Games\Minecraft\overviewer\overviewer-0.16.12"
 $WinSCPPath = "C:\Program Files (x86)\WinSCP"
+$ScriptPath = $MyInvocation.MyCommand.Path
+$WorkingDirectory = Split-Path $scriptpath
+$LogDirectory = "$WorkingDirectory\logs"
+# TODO: make logs dir if not present, otherwise logs not generated
 
 # FUNCTIONS
 # --------------------------------------------------------------------------------------------
 function Start-Minecraft-And-Wait {
   Push-Location $MinecraftServerPath
 
-  Start-Process javaw -ArgumentList "-Xms1024M", "-Xmx1024M", "-jar", "$MinecraftServerPath\server.jar" -RedirectStandardOutput stdout.txt -RedirectStandardError stderr.txt
+  Start-Process javaw  `
+  -ArgumentList "-Xms1024M", "-Xmx1024M", "-jar", "$MinecraftServerPath\server.jar"  `
+  -RedirectStandardOutput $LogDirectory\minecraft-stdout.txt  `
+  -RedirectStandardError  $LogDirectory\minecraft-stderr.txt
+
   Start-Sleep -s 10
   $MinecraftServerProcessId = (Get-Process | Where-Object { $_.MainWindowTitle -like '*Minecraft server*' }).id
   Wait-Process -Id $MinecraftServerProcessId
@@ -32,17 +40,19 @@ function Start-Overviewer-And-Wait {
   Add-Content -Path options.py -Encoding UTF8 -Value "}"
   Add-Content -Path options.py -Encoding UTF8 -Value "outputdir = `"../$World`"" -NoNewline
   
-  Start-Process $OverviewerPath\overviewer.exe -ArgumentList "--config=options.py" -RedirectStandardOutput stdout.txt -RedirectStandardError stderr.txt
+  Start-Process $OverviewerPath\overviewer.exe  `
+  -ArgumentList "--config=options.py"  `
+  -RedirectStandardOutput $LogDirectory\overviewer-stdout.txt  `
+  -RedirectStandardError  $LogDirectory\overviewer-stderr.txt
   $OverviewerProcessId = (Get-Process overviewer).id
   Wait-Process -Id $OverviewerProcessId
 }
 
 function Publish-Overviewer-Map-To-Web {
-  # TODO: ALL logs to go to scripting folder, including minecraft server and overviewer. All logs in one place...
   Push-Location $OverviewerPath
 
   & "$WinSCPPath\WinSCP.com" `
-    /log="WinSCP.log" /ini=nul `
+    /log="$LogDirectory\WinSCP.log" /ini=nul `
     /command `
       "open ftp://nv0ir8pq76p1%40steve-chamberlain.co.uk:WbB%3F2%2Cxp8%7DR%60X.%3F%23@ftp.steve-chamberlain.co.uk/" `
       "synchronize remote -delete ..\$World /public_html/$World" `
