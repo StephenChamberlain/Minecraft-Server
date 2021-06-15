@@ -1,12 +1,19 @@
 # Program location definitions.
 # --------------------------------------------------------------------------------------------
 $MinecraftServerPath = "D:\Games\Minecraft\server"
+$MinecraftServerProps = convertfrom-stringdata (get-content $MinecraftServerPath\server.properties -raw)
+$World = $MinecraftServerProps.'level-name'
+$WorldPath = "$MinecraftServerPath\$World"
+$WorldPathPythonFriendly = $WorldPath.replace('\','/')
 $OverviewerPath = "D:\Games\Minecraft\overviewer\overviewer-0.16.12"
 $WinSCPPath = "C:\Program Files (x86)\WinSCP"
 $ScriptPath = $MyInvocation.MyCommand.Path
 $WorkingDirectory = Split-Path $scriptpath
 $LogDirectory = "$WorkingDirectory\logs"
+
 # TODO: make logs dir if not present, otherwise logs not generated
+# TODO: rsync or something else for uploading (FTP == slow)
+# TODO: fixed IPs for routers
 
 # FUNCTIONS
 # --------------------------------------------------------------------------------------------
@@ -24,20 +31,26 @@ function Start-Minecraft-And-Wait {
 }
 
 function Start-Overviewer-And-Wait {
-  $MinecraftServerProps = convertfrom-stringdata (get-content $MinecraftServerPath\server.properties -raw)
-  $World = $MinecraftServerProps.'level-name'
-  $WorldPath = "$MinecraftServerPath\$World"
-  $WorldPathPythonFriendly = $WorldPath.replace('\','/')
-  
   Push-Location $OverviewerPath
+
   Out-File -Encoding UTF8 -FilePath options.py
   Add-Content -Path options.py -Encoding UTF8 -Value "imgformat = `"jpg`"" # Default is 'png'
   Add-Content -Path options.py -Encoding UTF8 -Value "imgquality = `"50`"" # Default is 95
   Add-Content -Path options.py -Encoding UTF8 -Value "worlds[`"$World`"] = `"$WorldPathPythonFriendly`""
-  Add-Content -Path options.py -Encoding UTF8 -Value "renders[`"normalrender`"] = {"
+  Add-Content -Path options.py -Encoding UTF8 -Value "renders[`"overworld`"] = {"
   Add-Content -Path options.py -Encoding UTF8 -Value "    `"world`": `"$World`","
-  Add-Content -Path options.py -Encoding UTF8 -Value "    `"title`": `"Normal render of $World`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"title`": `"Overworld`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"rendermode`": `"smooth_lighting`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"dimension`": `"overworld`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"crop`": (-350, -350, 350, 200),"
   Add-Content -Path options.py -Encoding UTF8 -Value "}"
+  Add-Content -Path options.py -Encoding UTF8 -Value "renders[`"nether`"] = {"
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"world`": `"$World`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"title`": `"Nether`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"rendermode`": `"nether_smooth_lighting`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"dimension`": `"nether`","
+  Add-Content -Path options.py -Encoding UTF8 -Value "    `"crop`": (-350, -350, 350, 200),"
+  Add-Content -Path options.py -Encoding UTF8 -Value "}"  
   Add-Content -Path options.py -Encoding UTF8 -Value "outputdir = `"../$World`"" -NoNewline
   
   Start-Process $OverviewerPath\overviewer.exe  `
@@ -49,7 +62,9 @@ function Start-Overviewer-And-Wait {
 }
 
 function Publish-Overviewer-Map-To-Web {
-  Push-Location $OverviewerPath
+  Push-Location $OverviewerPath/../$World
+
+  Write-Output $OverviewerPath/../$World
 
   & "$WinSCPPath\WinSCP.com" `
     /log="$LogDirectory\WinSCP.log" /ini=nul `
