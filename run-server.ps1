@@ -12,7 +12,6 @@ $WorkingDirectory = Split-Path $scriptpath
 $LogDirectory = "$WorkingDirectory\logs"
 
 # TODO: make logs dir if not present, otherwise logs not generated
-# TODO: rsync or something else for uploading (FTP == slow)
 # TODO: fixed IPs for routers
 
 # FUNCTIONS
@@ -62,15 +61,11 @@ function Start-Overviewer-And-Wait {
 }
 
 function Publish-Overviewer-Map-To-Web {
-  Push-Location $OverviewerPath/../$World
-
-  Write-Output $OverviewerPath/../$World
-
   & "$WinSCPPath\WinSCP.com" `
     /log="$LogDirectory\WinSCP.log" /ini=nul `
     /command `
-      "open ftp://nv0ir8pq76p1%40steve-chamberlain.co.uk:WbB%3F2%2Cxp8%7DR%60X.%3F%23@ftp.steve-chamberlain.co.uk/" `
-      "synchronize remote -delete ..\$World /public_html/$World" `
+      "open ftp://overviewer%40steve-chamberlain.co.uk:jtxhCWnjeknggBFZEri8@ftp.steve-chamberlain.co.uk/" `
+      "synchronize remote $OverviewerPath/../$World ." `
       "exit"
 
   $winscpResult = $LastExitCode
