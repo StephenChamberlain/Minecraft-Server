@@ -9,6 +9,7 @@ $OverviewerPath = "D:\Games\Minecraft\overviewer\overviewer-0.16.12"
 $WinSCPPath = "C:\Program Files (x86)\WinSCP"
 $ScriptPath = $MyInvocation.MyCommand.Path
 $WorkingDirectory = Split-Path $scriptpath
+$BackupDirectory = "D:\Games\Minecraft\server\world-backups"
 $LogDirectory = "$WorkingDirectory\logs"
 
 # TODO: make logs dir if not present, otherwise logs not generated
@@ -25,8 +26,20 @@ function Start-Minecraft-And-Wait {
   -RedirectStandardError  $LogDirectory\minecraft-stderr.txt
 
   Start-Sleep -s 10
+  # WARNING: if you create a shortcut link to start this script, be sure to name it something other than "Minecraft server", otherwise this
+  # command will find the powershell prompt and not the Minecraft server GUI window!
   $MinecraftServerProcessId = (Get-Process | Where-Object { $_.MainWindowTitle -like '*Minecraft server*' }).id
   Wait-Process -Id $MinecraftServerProcessId
+}
+
+function Backup-Minecraft {
+  $TimeStamp = Get-Date -Format "MM-dd-yyyy_HH-mm"
+  $compress = @{
+    Path = "$WorldPath"
+    CompressionLevel = "Fastest"
+    DestinationPath = "$BackupDirectory\$World-$TimeStamp.zip"
+  }
+  Compress-Archive @compress
 }
 
 function Start-Overviewer-And-Wait {
@@ -84,5 +97,6 @@ function Publish-Overviewer-Map-To-Web {
 # EXECUTE
 # --------------------------------------------------------------------------------------------
 Start-Minecraft-And-Wait
+Backup-Minecraft
 Start-Overviewer-And-Wait
 Publish-Overviewer-Map-To-Web
