@@ -1,7 +1,8 @@
 Script to do the following:
 
 - Run Minecraft server.
-- Once the server stops, generate an overview.
+- Once the server stops, create a zipped, timestamped backup.
+- Generate a world overview/isometric map with Overviewer (https://overviewer.org/).
 - Push the overview to the web (http://www.steve-chamberlain.co.uk/discordia).
 
 ## Instructions
