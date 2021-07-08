@@ -12,8 +12,9 @@ $WorkingDirectory = Split-Path $scriptpath
 $BackupDirectory = "D:\Games\Minecraft\server\world-backups"
 $LogDirectory = "$WorkingDirectory\logs"
 
-# TODO: make logs dir if not present, otherwise logs not generated
-# TODO: fixed IPs for routers
+# TODO: Check if there is a new version of minecraft server and download if available.
+# TODO: Make logs dir if not present, otherwise logs not generated.
+# TODO: Fixed IPs for routers
 
 # FUNCTIONS
 # --------------------------------------------------------------------------------------------
@@ -100,3 +101,4 @@ Start-Minecraft-And-Wait
 Backup-Minecraft
 Start-Overviewer-And-Wait
 Publish-Overviewer-Map-To-Web
+exit
