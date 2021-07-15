@@ -26,7 +26,7 @@ function Start-Minecraft-And-Wait {
   -RedirectStandardOutput $LogDirectory\minecraft-stdout.txt  `
   -RedirectStandardError  $LogDirectory\minecraft-stderr.txt
 
-  Start-Sleep -s 10
+  Start-Sleep -s 20
   # WARNING: if you create a shortcut link to start this script, be sure to name it something other than "Minecraft server", otherwise this
   # command will find the powershell prompt and not the Minecraft server GUI window!
   $MinecraftServerProcessId = (Get-Process | Where-Object { $_.MainWindowTitle -like '*Minecraft server*' }).id
